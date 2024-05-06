@@ -15,13 +15,13 @@ namespace DataAccess.Contracts
         Entity GetById(int id);
 
         // Método para añadir un nuevo registro
-        void Add(Entity entity);
+        int Add(Entity entity);
 
         // Método para actualizar un registro existente
-        void Update(Entity entity);
+        int Update(Entity entity);
 
         // Método para eliminar un registro
-        void Delete(Entity entity);
+        int Delete(Entity entity);
     }
 }
 
