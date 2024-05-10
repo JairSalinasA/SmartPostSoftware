@@ -21,7 +21,7 @@ namespace DataAccess.Contracts
         int Update(Entity entity);
 
         // Método para eliminar un registro
-        int Delete(Entity entity);
+        int Delete(int id); 
     }
 }
 
