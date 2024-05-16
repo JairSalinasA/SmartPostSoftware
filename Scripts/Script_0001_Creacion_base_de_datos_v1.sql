@@ -11,11 +11,12 @@ USE smart_pos;
 GO
 
 -- Crear la tabla de usuarios
-CREATE TABLE usuarios (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    nombre VARCHAR(50) NOT NULL,
-    apellido VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    contraseña VARCHAR(100) NOT NULL,
-    rol VARCHAR(20) NOT NULL
+CREATE TABLE Usuarios (
+    Id INT PRIMARY KEY,
+    Nombre VARCHAR(50),
+    Apellido VARCHAR(50),
+    Email VARCHAR(100),
+    Contraseña VARCHAR(100),
+    ContraseñaHash VARCHAR(100),
+    Rol VARCHAR(50) -- Agregamos el campo "Rol"
 );

@@ -1,72 +1,117 @@
 ﻿using DataAccess.Contracts;
+using DataAccess.Entities;
+using DataAccess.Repositories;
 using Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Models
 {
     public class UserModel
     {
-        public class Usuario
+        private readonly IUserRepository _userRepository;
+
+        // Constructor que inyecta la dependencia IUserRepository
+        public UserModel(IUserRepository userRepository)
         {
-            // Propiedad para almacenar el ID del usuario
-            private int id;
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        }
 
-            // Propiedad para almacenar el nombre del usuario
-            private string nombre;
+        // Propiedades del usuario con validaciones
+        public int Id { get; set; }
 
-            // Propiedad para almacenar el apellido del usuario
-            private string apellido;
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [StringLength(50, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 50 caracteres")]
+        public string Nombre { get; set; }
 
-            // Propiedad para almacenar el email del usuario
-            private string email;
+        [Required(ErrorMessage = "El apellido es obligatorio")]
+        [StringLength(50, MinimumLength = 2, ErrorMessage = "El apellido debe tener entre 2 y 50 caracteres")]
+        public string Apellido { get; set; }
 
-            // Propiedad para almacenar la contraseña del usuario
-            private string contraseña;
+        [Required(ErrorMessage = "El email es obligatorio")]
+        [DataType(DataType.EmailAddress, ErrorMessage = "El email no tiene un formato válido")]
+        [EmailAddress(ErrorMessage = "El email no tiene un formato válido")]
+        public string Email { get; set; }
 
-            // Propiedad para almacenar el rol del usuario (puede ser admin, usuario regular, etc.)
-            private string rol;
+        [Required(ErrorMessage = "La contraseña es obligatoria")]
+        [MinLength(6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{6,}$", ErrorMessage = "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial")]
+        public string Contraseña { get; set; }
 
-            private IUserRepository UserRepository;
-            public EntityState state { private get; set; }
+        [Required(ErrorMessage = "El rol es obligatorio")]
+        public string Rol { get; set; }
 
-            //Propiedades - validaciones -vaidar datos
-            public int Id { get => id; set => id = value; }
-            // Propiedad para el ID del usuario. Utiliza una expresión lambda para acceder al campo privado id y establecer su valor.
+        // EntityState se puede cambiar solo internamente en el modelo
+        public EntityState EntityState { private get; set; }
 
-            [Required(ErrorMessage = "El nombre es obligatorio")]
-            public string Nombre { get => nombre; set => nombre = value; }
-            // Propiedad para el nombre del usuario. Utiliza una expresión lambda para acceder al campo privado nombre y establecer su valor. 
-            // La anotación [Required] indica que este campo es obligatorio y muestra el mensaje de error especificado si el valor es nulo o vacío.
+        // Método para guardar los cambios en el repositorio
+        public string SaveChanges()
+        {
+            try
+            {
+                var userDataModel = new Usuario
+                {
+                    Id = Id,
+                    Nombre = Nombre,
+                    Apellido = Apellido,
+                    Email = Email,
+                    Contraseña = Contraseña,
+                    Rol = Rol
+                };
 
-            [Required(ErrorMessage = "El apellido es obligatorio")]
-            public string Apellido { get => apellido; set => apellido = value; }
-            // Propiedad para el apellido del usuario. Utiliza una expresión lambda para acceder al campo privado apellido y establecer su valor.
-            // La anotación [Required] indica que este campo es obligatorio y muestra el mensaje de error especificado si el valor es nulo o vacío.
+                switch (EntityState)
+                {
+                    case EntityState.Unchanged:
+                    case EntityState.Added:
+                        _userRepository.Add(userDataModel);
+                        return "Usuario agregado correctamente";
+                    case EntityState.Modified:
+                        _userRepository.Update(userDataModel);
+                        return "Usuario actualizado correctamente";
+                    case EntityState.Deleted:
+                        _userRepository.Delete(Id);
+                        return "Usuario eliminado correctamente";
+                    default:
+                        return "Operación desconocida";
+                }
+            }
+            catch (System.Data.SqlClient.SqlException sqlEx)
+            {
+                if (sqlEx.Number == 2627)
+                {
+                    return "Dato duplicado, por favor revisar el dato";
+                }
+                else
+                {
+                    return "Error al guardar los cambios: " + sqlEx.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Error al guardar los cambios: " + ex.Message;
+            }
+        }
 
-            [Required(ErrorMessage = "El email es obligatorio")]
-            [EmailAddress(ErrorMessage = "El email no tiene un formato válido")]
-            public string Email { get => email; set => email = value; }
-            // Propiedad para el email del usuario. Utiliza una expresión lambda para acceder al campo privado email y establecer su valor.
-            // La anotación [Required] indica que este campo es obligatorio y muestra el mensaje de error especificado si el valor es nulo o vacío.
-            // La anotación [EmailAddress] valida que el valor tenga un formato de dirección de correo electrónico válido y muestra el mensaje de error especificado si no lo tiene.
-
-            [Required(ErrorMessage = "La contraseña es obligatoria")]
-            [MinLength(6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
-            public string Contraseña { get => contraseña; set => contraseña = value; }
-            // Propiedad para la contraseña del usuario. Utiliza una expresión lambda para acceder al campo privado contraseña y establecer su valor.
-            // La anotación [Required] indica que este campo es obligatorio y muestra el mensaje de error especificado si el valor es nulo o vacío.
-            // La anotación [MinLength] valida que la longitud del valor sea de al menos 6 caracteres y muestra el mensaje de error especificado si no lo es.
-
-            [Required(ErrorMessage = "El rol es obligatorio")]
-            public string Rol { get => rol; set => rol = value; }
-            // Propiedad para el rol del usuario. Utiliza una expresión lambda para acceder al campo privado rol y establecer su valor.
-            // La anotación [Required] indica que este campo es obligatorio y muestra el mensaje de error especificado si el valor es nulo o vacío.
-
+        // Método para obtener todos los usuarios del repositorio
+        public List<UserModel> GetAll()
+        {
+            var userDataModel = _userRepository.GetAll();
+            var listUsers = new List<UserModel>();
+            foreach (Usuario item in userDataModel)
+            {
+                listUsers.Add(new UserModel(_userRepository)
+                {
+                    Id = item.Id,
+                    Nombre = item.Nombre,
+                    Apellido = item.Apellido,
+                    Email = item.Email,
+                    Contraseña = item.Contraseña,
+                    Rol = item.Rol
+                });
+            }
+            return listUsers;
         }
     }
 }
+
