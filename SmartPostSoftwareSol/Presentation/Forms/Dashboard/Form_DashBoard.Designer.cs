@@ -38,14 +38,14 @@ namespace Presentation.Forms.Dashboard
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(2291, 122);
+            this.panel1.Size = new System.Drawing.Size(1924, 129);
             this.panel1.TabIndex = 0;
             // 
             // Form_DashBoard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2291, 1152);
+            this.ClientSize = new System.Drawing.Size(1924, 1152);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form_DashBoard";
