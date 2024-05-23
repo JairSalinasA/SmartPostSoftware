@@ -28,5 +28,8 @@ namespace Presentation.Forms.Users.Helps
             // Por ahora, simplemente imprimir un mensaje en la consola cuando se redimensione el formulario
             Console.WriteLine("El formulario se ha redimensionado.");
         }
+
+        //agregar sombra a un table layoutPanel
+
     }
 }

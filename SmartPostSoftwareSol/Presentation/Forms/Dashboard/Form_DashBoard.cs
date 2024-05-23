@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Presentation.Helps;
 
 namespace Presentation.Forms.Dashboard
 {
@@ -15,6 +10,9 @@ namespace Presentation.Forms.Dashboard
         public Form_DashBoard()
         {
             InitializeComponent();
+            // Suscribir eventos Paint para los paneles con sombra
+            Style.SuscribirEventosPaint(panel_caja,panel_abonos,panel_Entradas,panel_Salidas);
+            // Agrega más paneles aquí si es necesario
         }
     }
 }

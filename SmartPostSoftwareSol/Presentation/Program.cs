@@ -1,4 +1,5 @@
 ﻿using Presentation.Forms;
+using Presentation.Forms.Load;
 using Presentation.Forms.Users;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Presentation
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Home());
+            Application.Run(new Fom_Load());
         }
     }
 }
